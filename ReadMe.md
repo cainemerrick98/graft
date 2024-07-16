@@ -13,4 +13,4 @@ Inherently capturing task dependencies allows more complex functionality in Graf
 
 ## Tech
 
-For the frontend graft uses React and ReactFlow. And on the backend FastApi is used along with a SQL Database
+For the frontend graft uses React and ReactFlow. And on the backend Django is used along with a SQL Database
