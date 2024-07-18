@@ -19,6 +19,10 @@ class Task(models.Model):
 
 class TaskDependencyManager(models.Manager):
     def by_taskset(self, taskset:TaskSet):
+        """
+        filter task dependencies according to the taskset they belong
+        to
+        """
         return self.filter(
             models.Q(child__taskset=taskset) | models.Q(parent__taskset=taskset)
             ).distinct()

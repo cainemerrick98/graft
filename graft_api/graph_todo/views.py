@@ -1,7 +1,7 @@
 from rest_framework import permissions
-from graph_todo.custom_viewsets import CreateUpdateDestroyViewSet
+from graph_todo.custom_viewsets import CreateUpdateDestroyViewSet, CreateDestroyViewSet
 from graph_todo.models import TaskSet, Task, TaskDependency, User
-from graph_todo.serializers import TaskSerializer
+from graph_todo.serializers import TaskSerializer, TaskDependencySerializer
 
 # Create your views here.
 class TaskViewSet(CreateUpdateDestroyViewSet):
@@ -12,5 +12,13 @@ class TaskViewSet(CreateUpdateDestroyViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
+class TaskDependencyViewSet(CreateDestroyViewSet):
+    """
+    creating and deleting task dependencies
+    """
+    queryset = TaskDependency.objects.all()
+    serializer_class = TaskDependencySerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
