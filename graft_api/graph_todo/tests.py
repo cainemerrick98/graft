@@ -111,7 +111,7 @@ class TestTaskDependencyApi(APITestCase):
         status code and the task should be accessible in the db
         """
         data = {'parent':self.task1.pk, 'child':self.task2.pk}
-        response = self.client.post(reverse('task_dependency-list'), data=data, format='json')
+        response = self.client.post(reverse('dependency-list'), data=data, format='json')
         
         self.assertEqual(response.status_code, 201)
 
@@ -130,7 +130,7 @@ class TestTaskDependencyApi(APITestCase):
         fields are blank
         """
         data = {'parent':'', 'child':self.task2.pk}
-        response = self.client.post(reverse('task_dependency-list'), data=data, format='json')
+        response = self.client.post(reverse('dependency-list'), data=data, format='json')
         
         self.assertEqual(response.status_code, 400)
     
@@ -139,7 +139,7 @@ class TestTaskDependencyApi(APITestCase):
         The dependency viewset does not define any list or 
         retrieval methods
         """
-        response = self.client.get(reverse('task_dependency-list'))
+        response = self.client.get(reverse('dependency-list'))
         self.assertEqual(response.status_code, 405)
 
     def test_delete_dependency_success(self):
@@ -149,7 +149,7 @@ class TestTaskDependencyApi(APITestCase):
         the db
         """
         dependency = TaskDependency.objects.create(parent=self.task1, child=self.task2)
-        response = self.client.delete(reverse('task_dependency-detail', kwargs={'pk':dependency.pk}))
+        response = self.client.delete(reverse('dependency-detail', kwargs={'pk':dependency.pk}))
         
         self.assertEqual(response.status_code, 204)
         self.assertRaises(ObjectDoesNotExist, TaskDependency.objects.get, pk=dependency.pk)
@@ -175,15 +175,32 @@ class TestTaskDependencyApi(APITestCase):
         
 class TestTaskSetApi(APITestCase):
     def setUp(self) -> None:
+        self.user = User.objects.create(username='user', email='user@gmail.com')
+        self.user.set_password('pword')
+        self.user.save()
+        self.access_token = AccessToken.for_user(self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+
+        self.taskset = TaskSet.objects.create(user=self.user, name='taskset')
         return super().setUp()
     
     def test_add_taskset_success(self):
         """
         a successful call to the add taskset should return 
-        the 201 status code. The taskset should then be accessible
+        the 200 status code. The taskset should then be accessible
         in the db.
         """
-        pass
+        data = {'user':self.user.pk, 'name':'taskset1'}
+        response = self.client.post(path=reverse('taskset-list'), data=data, format='json')
+        
+        self.assertEqual(response.status_code, 201)
+
+        queryset = TaskSet.objects.all()
+        new_taskset = queryset[1]
+
+        self.assertEqual(len(queryset), 2)
+        self.assertEqual(new_taskset.name, data['name'])
+        self.assertEqual(new_taskset.user, self.user)
 
     def test_add_taskset_failure(self):
         """
@@ -191,13 +208,24 @@ class TestTaskSetApi(APITestCase):
         the 400 status code - this will happen if the user or the
         name is blank
         """
-        pass
+        data = {'user':self.user.pk, 'name':''}
+        response = self.client.post(path=reverse('taskset-list'), data=data, format='json')
+        
+        self.assertEqual(response.status_code, 400)
 
     def test_get_all_tasksets_success(self):
         """
         a successful to the get all tasksets api should return
         the 200 status code along with an array of all tasksets.
         """
+        response = self.client.get(path=reverse('taskset-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+        TaskSet.objects.create(user=self.user, name='new_taskset')
+
+        response = self.client.get(path=reverse('taskset-list'))
+        self.assertEqual(len(response.data), 2)
 
     def test_get_taskset_success(self):
         """
@@ -205,7 +233,19 @@ class TestTaskSetApi(APITestCase):
         the 200 status code along with all the tasks in the taskset 
         and all of the dependencies between these tasks.
         """
-        pass
+        #create some data to make sure it works 
+        t1 = Task.objects.create(taskset=self.taskset, title='task1')
+        t2 = Task.objects.create(taskset=self.taskset, title='task2')
+        t3 = Task.objects.create(taskset=self.taskset, title='task3')
+        TaskDependency.objects.create(parent=t1, child=t2)
+        
+        response = self.client.get(path=reverse('taskset-detail', kwargs={'pk':self.taskset.pk}))
+        data: dict = response.data
+    
+        self.assertEqual(response.status_code, 200)
+        self.assertListEqual(list(data.keys()), ['tasks', 'dependencies'])
+        self.assertEqual(len(data['tasks']), 3)
+        self.assertEqual(len(data['dependencies']), 1)
 
     def test_get_taskset_failure(self):
         """
@@ -213,19 +253,30 @@ class TestTaskSetApi(APITestCase):
         the 400 status code. This will happen if the pk 
         does not exist in the taksset database.
         """
-        pass
+        response = self.client.get(path=reverse('taskset-detail', kwargs={'pk':999}))
+        self.assertEqual(response.status_code, 404)
 
     def test_update_taskset_success(self):
         """
         a successful call to the update taskset api should return 
-        the 202 status code. These changes should then be reflected in the db
+        the 200 status code. These changes should then be reflected in the db
         """
-        pass
+        response = self.client.patch(path=reverse('taskset-detail', kwargs={'pk': self.taskset.pk}), data={'name':'renamed_taskset'})
+        self.assertEqual(response.status_code, 200)
+
+        taskset = TaskSet.objects.get(pk=self.taskset.pk)
+
+        self.assertEqual(taskset.name, 'renamed_taskset')
+
+
 
     def test_delete_taskset_success(self):
         """
         a successful call to the delet taskset api should return 
         the 202 status code. These changes should then be reflected in the db
         """
-
+        response = self.client.delete(path=reverse('taskset-detail', kwargs={'pk': self.taskset.pk}))
+        
+        self.assertEqual(response.status_code, 204)
+        self.assertRaises(ObjectDoesNotExist, TaskSet.objects.get, pk=self.taskset.pk)
     
