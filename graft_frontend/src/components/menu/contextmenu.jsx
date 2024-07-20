@@ -1,4 +1,3 @@
-import { useState } from "react";
 import './contextmenu.css'
 
 function ContextMenu({position, onAddNode}){
@@ -11,6 +10,7 @@ function ContextMenu({position, onAddNode}){
     return (
         <div className="context-menu" style={{top:y, left:x}}>
             <div className="menu-list">
+                <div className="list-title">Menu</div>
                 <div className="list-item" onClick={handleAddNode}>Add node</div>
             </div>
         </div>
