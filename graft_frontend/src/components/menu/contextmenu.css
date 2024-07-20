@@ -1,0 +1,32 @@
+.context-menu{
+    height: 175px;
+    width: 125px;
+    position:absolute;
+    background-color: white;
+    border: 1px solid darkgrey;
+    
+}
+
+.menu-list{
+    display: flex;
+    flex-direction: column;
+}
+
+.list-title{
+    font-weight: bold;
+    padding:3px;
+    border-bottom: 1px solid lightgray;
+    font-size: 10px;
+}
+
+.list-item{
+    display: flex;
+    padding: 5px;
+    font-size: 14px;
+    border-bottom: 1px solid lightgray;
+}
+
+.list-item:hover{
+    background-color: rgb(235, 234, 234);
+    cursor: pointer;
+}

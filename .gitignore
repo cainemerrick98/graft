@@ -1,1 +1,6 @@
 graftenv/
+
+# dependencies
+graft_frontend/node_modules
+graft_frontend/.pnp
+graft_frontend/.pnp.js

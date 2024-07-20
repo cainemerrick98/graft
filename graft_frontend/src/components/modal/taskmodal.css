@@ -1,0 +1,26 @@
+.taskmodal{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 60%;
+    overflow: hidden;
+    background-color: white;
+    z-index: 9999;
+    border: 1px solid darkgray;
+    
+}
+
+.modal-title{
+    display: flex;
+    padding: 5px;
+    background-color: lightgray;
+    font-weight: bold;
+    font-size: 14px;
+    border-bottom: 1px solid darkgray;
+}
+
+.taskform{
+    padding: 10px;
+}
