@@ -5,6 +5,10 @@ import TaskModal from "../modal/taskmodal";
 import '@xyflow/react/dist/style.css';
 import './taskgraph.css'
 
+const contextMenus = {
+    PANE:'PANE',
+    NODE:'NODE',
+}
 
 const initialNodes = [
     {
@@ -16,21 +20,13 @@ const initialNodes = [
 ]
 const initialEdges = []
 
-/**
- * 
- * @param {HTMLElement} element 
- */
-function nodeClicked(element){
-    return element.classList.contains('react-flow__node')
-}
-
 function TaskGraph(){
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState(initialEdges);
     const [contextMenu, setContextMenu] = useState(null)
     const [taskModal, setTaskModal] = useState(null)
-    const reactFlowWrapper = useRef(null)
-    const { screenToFlowPosition, getZoom, getViewport } = useReactFlow();
+    const ref = useRef(null)
+    const reactFlowInstance = useReactFlow();
 
     const onNodesChange = useCallback(
         (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -45,57 +41,73 @@ function TaskGraph(){
         [],
       );
 
-    /**
-     * @param {Object} position
-     */
-    function addNode (position) {
-        const new_node = {
-            id: `${nodes.length}`, 
-            position:screenToFlowPosition(position),
-            origin:[0.5, 0.0],
-        }
-        setNodes((nodes) => [...nodes, new_node])
-        setContextMenu(null)
+    function calculatePanePosition(click){
+        const reactFlowBounds = ref.current.getBoundingClientRect();
+        const reactFlowPosition = reactFlowInstance.screenToFlowPosition({
+            x:(click.clientX + reactFlowBounds.left),
+            y:(click.clientY + reactFlowBounds.top),
+        })
+        return reactFlowPosition
     }
 
-    /**
-     * 
-     * @param {MouseEvent} click 
-     */
-    function handleContextMenu(click){
-        //TODO: if click is on a node menu does not appear in the correct position
+    function handlePaneContextMenu(click){
         click.preventDefault()
-        const zoom = getZoom()
-        const react_flow_bounds = click.target.getBoundingClientRect();
-        setContextMenu({position:screenToFlowPosition({
-            x:click.clientX + react_flow_bounds.left, 
-            y:click.clientY + react_flow_bounds.top
-        })})
+        const position = calculatePanePosition(click)
+        setContextMenu({position:position, menuType:contextMenus.PANE})
+        
     }
 
-    function handleOnClick(click){
+    function handlePaneClick(click){
         if(contextMenu){
             setContextMenu(null)
+        }
+        if(taskModal){
+            setTaskModal(null)
+        }
+    }
+
+    function handleNodeContextMenu(click){
+        click.preventDefault()
+        const position = calculatePanePosition(click)
+        setContextMenu({position:position, menuType:contextMenus.NODE, setContextMenu:setContextMenu})
+    }
+
+    function handleNodeClick(){
+        if(contextMenu){
+            setContextMenu(null)
+        }
+        if(taskModal){
+            setTaskModal(null)
         }
     }
 
     return(
-        <div className="taskgraph" ref={reactFlowWrapper} onContextMenu={handleContextMenu} onClick={handleOnClick}>
+        <div className="taskgraph">
             <ReactFlow 
+            ref={ref}
             nodes={nodes} 
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onPaneContextMenu={handlePaneContextMenu}
+            onPaneClick={handlePaneClick}
+            onNodeContextMenu={handleNodeContextMenu}
+            onNodeClick={handleNodeClick}
             >
                 <Background variant="dots"></Background>
 
             </ReactFlow>
             {contextMenu && (
-                <ContextMenu position={contextMenu.position} onAddNode={addNode}></ContextMenu>
+                <ContextMenu 
+                position={contextMenu.position} 
+                menuType={contextMenu.menuType} 
+                setContextMenu={setContextMenu}
+                setTaskModal={setTaskModal}
+                ></ContextMenu>
             )}
             {taskModal && (
-                <TaskModal position={taskModal.position}></TaskModal>
+                <TaskModal id={taskModal.id}></TaskModal>
             )}
         </div>
     )
