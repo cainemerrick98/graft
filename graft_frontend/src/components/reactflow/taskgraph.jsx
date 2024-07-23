@@ -43,10 +43,13 @@ function TaskGraph(){
 
     function calculatePanePosition(click){
         const reactFlowBounds = ref.current.getBoundingClientRect();
+        const viewport = reactFlowInstance.getViewport()
         const reactFlowPosition = reactFlowInstance.screenToFlowPosition({
-            x:(click.clientX + reactFlowBounds.left),
-            y:(click.clientY + reactFlowBounds.top),
+            x:(click.clientX + reactFlowBounds.left + viewport.x),
+            y:(click.clientY + reactFlowBounds.top + viewport.y),
         })
+        reactFlowPosition.x *= viewport.zoom
+        reactFlowPosition.y *= viewport.zoom
         return reactFlowPosition
     }
 
