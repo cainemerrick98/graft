@@ -1,4 +1,4 @@
-import { ReactFlow, Controls, Background, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow, ReactFlowProvider} from "@xyflow/react";
+import { ReactFlow, Background, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow, ReactFlowProvider} from "@xyflow/react";
 import { useState, useRef, useCallback } from "react";
 import ContextMenu from "../menu/contextmenu";
 import TaskModal from "../modal/taskmodal";

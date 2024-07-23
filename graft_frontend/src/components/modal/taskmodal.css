@@ -3,12 +3,13 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80%;
-    height: 60%;
+    width: 90%;
+    height: 70%;
     overflow: hidden;
     background-color: white;
     z-index: 9999;
     border: 1px solid darkgray;
+    box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.08);;
     
 }
 
@@ -19,8 +20,56 @@
     font-weight: bold;
     font-size: 14px;
     border-bottom: 1px solid darkgray;
+    height:20px
 }
 
 .taskform{
     padding: 10px;
+}
+
+.form-row{
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.form-column{
+    display: flex;
+    flex-direction: column;
+}
+
+.form-input{
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    height: 20px;
+    padding: 5px;
+}
+
+.form-input:focus{
+    outline: 2px solid darkgray;
+}
+
+.form-textarea{
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    height: 150px;
+    resize: none;
+    vertical-align: top;
+    font-family: sans-serif;
+    padding: 5px;
+}
+
+.form-textarea:focus{
+    outline: 2px solid darkgray;
+}
+
+.form-checkbox{
+    float: left;
+}
+
+.half-width{
+    width:50%;
+}
+
+.full-width{
+    width: 90%;
 }
