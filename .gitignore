@@ -4,3 +4,7 @@ graftenv/
 graft_frontend/node_modules
 graft_frontend/.pnp
 graft_frontend/.pnp.js
+
+# environment vars
+graft_frontend/.env.development
+graft_frontend/.env.production
