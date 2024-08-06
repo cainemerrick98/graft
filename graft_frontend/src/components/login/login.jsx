@@ -13,6 +13,7 @@ function Login(){
    * if so they are redirected to their taskgraphs
    */
   useEffect(() => {
+    //TODO: check if token is valid
     const token = localStorage.getItem('accessToken')
     if(token){
       navigate('/taskgraph')
