@@ -20,3 +20,8 @@
     padding:5px;
     margin-bottom: 10px;
 }
+
+.error-msg{
+    color: red;
+    font-size: 12px;
+}

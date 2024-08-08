@@ -1,55 +1,56 @@
 import './login.css'
+import {fetchWithAuth, fetchWithLogin} from '../../api/fecthWrappers'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function Login(){
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [loginError, setLoginError] = useState(null)
   const navigate = useNavigate()
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   /**
    * used to check if the user is already logged in
    * if so they are redirected to their taskgraphs
    */
   useEffect(() => {
-    //TODO: check if token is valid
-    const token = localStorage.getItem('accessToken')
-    if(token){
-      navigate('/taskgraph')
+
+    const verifyToken = async () => {
+      const response = await fetchWithAuth('auth/verify_token/')
+      if(response.ok){
+        navigate('/taskgraph')
+      }
     }
-  }, [navigate])
+
+    verifyToken()
+    
+  }, [])
 
   /**
    * @param {SubmitEvent} e 
    */
   async function handleLogin(e){
     e.preventDefault()
-    const response = await fetch(`${apiUrl}/auth/login/`,{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-      },
-      body:JSON.stringify({username, password})
-    })
-    
+    const response = await fetchWithLogin(username, password)
+
     if (response.ok){
       const data = await response.json()
       localStorage.setItem('refreshToken', data.refresh)
       localStorage.setItem('accessToken', data.access)
-      navigate('/taskgraph')
+      window.location.href = '/taskgraph'
     } else{
-      // TODO: Handle incorrect details with error message
-      console.log(response)
-      const data = await response.json()
-      console.log(data)
+      setLoginError('*incorrect username or password')
     }
+    
   }
 
   return(
     <div className='login-container'>
       <form className='login' onSubmit={handleLogin}>
         <h1>Login</h1>
+        {loginError && (
+          <p className='error-msg'>{loginError}</p>
+        )}
         <input 
           type='text' 
           placeholder='username'

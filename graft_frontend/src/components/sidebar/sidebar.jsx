@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { fetchWithAuth } from "../../api/fecthWrappers";
 import './sidebar.css' 
 
 const initial_tasksets = [
@@ -10,32 +11,16 @@ const initial_tasksets = [
 function Sidebar(){
     const [tasksets, setTasksets] = useState(initial_tasksets)
     const [hidden, setHidden] = useState(false)
-    const apiUrl = process.env.REACT_APP_API_URL;
 
     /**
      * retreives user tasksets
      */
     useEffect(() => {
-        //TODO: finish API call handle
-        const fetchTasksets = async () => {
-            const response = await fetch(`${apiUrl}/todo/taskset/`,{
-                method:'GET',
-                headers:{
-                  'Content-Type':'application/json',
-                  'Authorization': `Bearer ${localStorage.getItem('accessToken')}` 
-                }    
-            })
-
-            if(response.ok){
-                const data = await response.json()
-                console.log(data)
-            } else{
-                console.log(response)
-                const data = await response.json()
-                console.log(data)
-            }
-        }
-        fetchTasksets();
+       const response = fetchWithAuth('todo/taskset/')
+       if(response.ok){
+        const tasksets = response.json()
+        console.log(tasksets)
+       }
     }, [])
 
     const taskset_divs = tasksets.map(ts => 

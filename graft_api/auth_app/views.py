@@ -29,6 +29,13 @@ class LoginAPI(generics.GenericAPIView):
         return Response(status=401, data={'msg':'invalid credentials'})
         
 
+class verifyTokenView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response(status=200)
+
+
 class userInfoView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
