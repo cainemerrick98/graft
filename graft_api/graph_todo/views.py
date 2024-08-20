@@ -20,7 +20,6 @@ class TaskSetViewSet(AllMethodsViewSet):
         
         dependencies = TaskDependency.objects.by_taskset(taskset)
         dependency_serializer = TaskDependencySerializer(dependencies, many=True)
-
         return Response({'tasks':task_serializer.data, 'dependencies':dependency_serializer.data}, 200)
 
 class TaskViewSet(CreateUpdateDestroyViewSet):

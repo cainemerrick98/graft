@@ -1,32 +1,40 @@
 import { ReactFlow, Background, applyNodeChanges, applyEdgeChanges, addEdge, useReactFlow, ReactFlowProvider} from "@xyflow/react";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import ContextMenu from "../menu/contextmenu";
 import TaskModal from "../modal/taskmodal";
 import '@xyflow/react/dist/style.css';
 import './taskgraph.css'
+import { fetchWithAuth } from "../../api/fecthWrappers";
 
 const contextMenus = {
     PANE:'PANE',
     NODE:'NODE',
 }
 
-const initialNodes = [
-    {
-        id: '0',
-        type: 'input',
-        data: { label: 'Node' },
-        position: { x: 0, y: 50 },
-      },
-]
-const initialEdges = []
 
-function TaskGraph(){
-    const [nodes, setNodes] = useState(initialNodes);
-    const [edges, setEdges] = useState(initialEdges);
+
+function TaskGraph({activeTaskset}){
+    const [nodes, setNodes] = useState([]);
+    const [edges, setEdges] = useState([]);
     const [contextMenu, setContextMenu] = useState(null)
     const [taskModal, setTaskModal] = useState(null)
     const ref = useRef(null)
     const reactFlowInstance = useReactFlow();
+
+    useEffect(() => {
+        if(activeTaskset){
+            console.log(activeTaskset)
+            const getTasks = async (activeTaskset) => {
+                const response = await fetchWithAuth(`todo/taskset/${activeTaskset}/`)
+                if(response.ok){
+                    const tasks = await response.json()
+                    console.log(tasks)
+                }
+            }
+            getTasks(activeTaskset)
+        }
+    }, [activeTaskset])
+
 
     const onNodesChange = useCallback(
         (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -104,7 +112,9 @@ function TaskGraph(){
             {contextMenu && (
                 <ContextMenu 
                 position={contextMenu.position} 
-                menuType={contextMenu.menuType} 
+                menuType={contextMenu.menuType}
+                //TODO: change naming convention below
+                //Something like onContextMenu & onTaskModal 
                 setContextMenu={setContextMenu}
                 setTaskModal={setTaskModal}
                 ></ContextMenu>
@@ -116,8 +126,12 @@ function TaskGraph(){
     )
 }
 
-export default () => (
-    <ReactFlowProvider>
-        <TaskGraph></TaskGraph>
-    </ReactFlowProvider>
-)
+function TaskGraphWrapper({activeTaskset}) {
+    return(
+        <ReactFlowProvider>
+            <TaskGraph activeTaskset={activeTaskset}></TaskGraph>
+        </ReactFlowProvider>
+    )
+}
+
+export default TaskGraphWrapper

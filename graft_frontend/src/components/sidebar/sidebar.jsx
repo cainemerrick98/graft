@@ -1,30 +1,15 @@
-import { useState, useEffect } from "react";
-import { fetchWithAuth } from "../../api/fecthWrappers";
+import { useState } from "react";
 import './sidebar.css' 
 
-const initial_tasksets = [
-    {name: 'taskset1', id:1, user:1},
-    {name: 'taskset2', id:2, user:1},
-    {name: 'taskset3', id:3, user:1},
-]
-
-function Sidebar(){
-    const [tasksets, setTasksets] = useState(initial_tasksets)
+function Sidebar({tasksets, activeTaskset, onTasksetChange}){
     const [hidden, setHidden] = useState(false)
 
-    /**
-     * retreives user tasksets
-     */
-    useEffect(() => {
-       const response = fetchWithAuth('todo/taskset/')
-       if(response.ok){
-        const tasksets = response.json()
-        console.log(tasksets)
-       }
-    }, [])
-
     const taskset_divs = tasksets.map(ts => 
-        <div className="taskset" id={ts.id} key={ts.id}>
+        <div className={`taskset ${ts.id === activeTaskset ? 'active' : ''}`} 
+        id={ts.id} 
+        key={ts.id}
+        onClick={(e) => {onTasksetChange(Number(e.target.id))}}
+        >
             {ts.name}
         </div> 
     )

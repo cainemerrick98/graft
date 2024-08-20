@@ -24,7 +24,7 @@ function Login(){
 
     verifyToken()
     
-  }, [])
+  }, [navigate])
 
   /**
    * @param {SubmitEvent} e 

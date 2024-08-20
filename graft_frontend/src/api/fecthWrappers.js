@@ -34,7 +34,7 @@ const fetchWithAuth = async (endpoint, options={}) => {
             //refresh expired or invalid
             localStorage.removeItem('accessToken')
             localStorage.removeItem('refreshToken')
-            if(window.location.pathname != '/login'){
+            if(window.location.pathname !== '/login'){
                 window.location.href = './login'
             }
         }

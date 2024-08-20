@@ -37,6 +37,4 @@ class TaskDependency(models.Model):
         unique_together = ('child', 'parent')
 
     def __str__(self):
-        return f'{self.parent.title} --> {self.child.title}'
-
-    
+        return f'{self.parent.title} --> {self.child.title}'    
