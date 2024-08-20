@@ -11,7 +11,27 @@ const contextMenus = {
     NODE:'NODE',
 }
 
+function tasksToNodes(tasks){
+    const nodes = tasks.map(task => {
+        return {
+            id:String(task.id),
+            position:{x:task.x, y:task.y},
+            data:{label:task.title}
+        }
+    })
+    return nodes
+}
 
+function dependenciesToEdges(dependencies){
+    const edges = dependencies.map(dependency => {
+        return {
+            id:String(dependency.id),
+            source:String(dependency.parent),
+            target:String(dependency.child),
+        }
+    })
+    return edges
+}
 
 function TaskGraph({activeTaskset}){
     const [nodes, setNodes] = useState([]);
@@ -27,8 +47,11 @@ function TaskGraph({activeTaskset}){
             const getTasks = async (activeTaskset) => {
                 const response = await fetchWithAuth(`todo/taskset/${activeTaskset}/`)
                 if(response.ok){
-                    const tasks = await response.json()
-                    console.log(tasks)
+                    const taskset = await response.json()
+                    const nodes = tasksToNodes(taskset.tasks)
+                    const edges = dependenciesToEdges(taskset.dependencies)
+                    setNodes(nodes)
+                    setEdges(edges)
                 }
             }
             getTasks(activeTaskset)
@@ -40,6 +63,35 @@ function TaskGraph({activeTaskset}){
         (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
         [],
       );
+    
+    const handleNodeDragStop = useCallback(
+        (event, node) => {
+            updateNodePosition(node.id, node.position)
+        },
+        []
+    )
+    
+
+    const updateNodePosition = async (id, position) => {
+        try{
+            console.log(position)
+            const response = await fetchWithAuth(`/todo/task/${id}/`, {
+                method:'PATCH',
+                body:JSON.stringify({
+                    x:position.x,
+                    y:position.y,
+                })
+            })
+            if(! response.ok){
+                const data = await response.json()
+                console.log(data)
+                console.error('failed to update position')
+            }
+        } catch(error){
+                console.error(error)
+        }
+    }
+
     const onEdgesChange = useCallback(
         (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
         [],
@@ -80,6 +132,7 @@ function TaskGraph({activeTaskset}){
     function handleNodeContextMenu(click){
         click.preventDefault()
         const position = calculatePanePosition(click)
+        console.log(position)
         setContextMenu({position:position, menuType:contextMenus.NODE, setContextMenu:setContextMenu})
     }
 
@@ -105,6 +158,7 @@ function TaskGraph({activeTaskset}){
             onPaneClick={handlePaneClick}
             onNodeContextMenu={handleNodeContextMenu}
             onNodeClick={handleNodeClick}
+            onNodeDragStop={handleNodeDragStop}
             >
                 <Background variant="dots"></Background>
 

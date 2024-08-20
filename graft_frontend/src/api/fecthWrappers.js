@@ -5,12 +5,14 @@ const fetchWithAuth = async (endpoint, options={}) => {
     const refreshToken = localStorage.getItem('refreshToken')
 
     options.headers = {
-        'Content-Type': 'application-json',
+        'Content-Type': 'application/json',
         ...options.headers,
         'Authorization': `Bearer ${accessToken}`
     };
 
     var response = await fetch(url, options)
+
+    console.log(options)
 
     //access token has expired
     if(response.status === 401){

@@ -13,6 +13,8 @@ class Task(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     completed = models.BooleanField(default=False)
+    x = models.FloatField(default=0.0)
+    y = models.FloatField(default=0.0)
     
     def __str__(self):
         return self.title
