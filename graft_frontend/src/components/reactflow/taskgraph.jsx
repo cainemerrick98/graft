@@ -5,39 +5,11 @@ import TaskModal from "../modal/taskmodal";
 import '@xyflow/react/dist/style.css';
 import './taskgraph.css'
 import { fetchWithAuth } from "../../api/fecthWrappers";
+import { nodeToTask, edgeToDependency, tasksToNodes, dependenciesToEdges } from "../../api/objectConverters";
 
 const contextMenus = {
     PANE:'PANE',
     NODE:'NODE',
-}
-
-function tasksToNodes(tasks){
-    const nodes = tasks.map(task => {
-        return {
-            id:String(task.id),
-            position:{x:task.x, y:task.y},
-            data:{label:task.title}
-        }
-    })
-    return nodes
-}
-
-function dependenciesToEdges(dependencies){
-    const edges = dependencies.map(dependency => {
-        return {
-            id:String(dependency.id),
-            source:String(dependency.parent),
-            target:String(dependency.child),
-        }
-    })
-    return edges
-}
-
-function edgeToDependency(edge){
-    return {
-        child:edge.target,
-        parent:edge.source
-    }
 }
 
 function TaskGraph({activeTaskset}){

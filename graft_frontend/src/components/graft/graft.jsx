@@ -16,8 +16,13 @@ function Graft(){
       const response =  await fetchWithAuth('todo/taskset/')
       if(response.ok){
         const tasksets = await response.json()
-        setTasksets(tasksets)
-        setActiveTaskset(tasksets[0].id)
+        if(tasksets.length == 0){
+          setTasksets([])
+          setActiveTaskset(null)
+        }else{
+          setTasksets(tasksets)
+          setActiveTaskset(tasksets[0].id)
+        }
       }
     }
     getTasksets()

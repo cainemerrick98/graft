@@ -2,8 +2,7 @@ import { useReactFlow } from '@xyflow/react'
 import './taskmodal.css'
 import { useState } from 'react'
 
-function TaskModal({task_id}){
-    const reactFlowInstance = useReactFlow()
+function TaskModal({task}){
     
     //TODO: we need to have access to the task!
     return (
