@@ -35,6 +35,7 @@ function Graft(){
       <Sidebar tasksets={tasksets} 
       activeTaskset={activeTaskset}
       onTasksetChange={handleTasksetChange}
+      setTasksets={setTasksets}
       />
       <TaskGraphWrapper activeTaskset={activeTaskset}/>
     </div>

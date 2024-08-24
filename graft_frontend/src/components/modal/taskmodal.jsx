@@ -1,17 +1,15 @@
+import { useReactFlow } from '@xyflow/react'
 import './taskmodal.css'
 import { useState } from 'react'
 
 function TaskModal({task_id}){
-    const [modalTitle, setModalTitle] = useState('')
-
-    function handleTitleChange(input){
-        setModalTitle(input.target.value)
-    }
-
+    const reactFlowInstance = useReactFlow()
+    
+    //TODO: we need to have access to the task!
     return (
         <div className='taskmodal'>
             <div className='modal-title'>
-                {modalTitle}
+                Edit Task
             </div>
             <form className='taskform'>
                 <div className='form-row'>
@@ -25,7 +23,7 @@ function TaskModal({task_id}){
                 <div className='form-row'>
                     <div className='form-column half-width'>
                         <label htmlFor='title'>Title</label>
-                        <input id='title' className='form-input' onInput={handleTitleChange}/>
+                        <input id='title' className='form-input'/>
                     </div>
                 </div>
                 <div className='form-row'>

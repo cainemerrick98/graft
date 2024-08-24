@@ -33,6 +33,13 @@ function dependenciesToEdges(dependencies){
     return edges
 }
 
+function edgeToDependency(edge){
+    return {
+        child:edge.target,
+        parent:edge.source
+    }
+}
+
 function TaskGraph({activeTaskset}){
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
@@ -70,11 +77,9 @@ function TaskGraph({activeTaskset}){
         },
         []
     )
-    
 
     const updateNodePosition = async (id, position) => {
         try{
-            console.log(position)
             const response = await fetchWithAuth(`/todo/task/${id}/`, {
                 method:'PATCH',
                 body:JSON.stringify({
@@ -96,10 +101,48 @@ function TaskGraph({activeTaskset}){
         (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
         [],
       );
-    const onConnect = useCallback(
+      
+    const finishConnect = useCallback(
         (params) => setEdges((eds) => addEdge(params, eds)),
         [],
       );
+    
+    const handleOnConnect = async(params) => {
+        const dependency = edgeToDependency(params)
+        const options = {
+            method:'POST',
+            body:JSON.stringify(dependency)
+        }
+        
+        try{
+            const response = await fetchWithAuth('todo/dependency/', options)
+            if(response.ok){
+                finishConnect(params)
+            }else{
+                window.alert('Bad response')
+            }
+        }
+        catch(error){
+            window.alert(error)
+        }
+    }
+
+    const handleDeleteEdge = async(edges) => {
+        const options = {
+            method:'DELETE',
+        }
+        try{
+            const response = await fetchWithAuth(`todo/dependency/${edges[0].id}/`, options)
+            if(response.ok){
+                console.log('deleted edge')
+            }else{
+                window.alert('Bad response')
+            }
+        }
+        catch(error){
+            window.alert(error)
+        }
+    }
 
     function calculatePanePosition(click){
         const reactFlowBounds = ref.current.getBoundingClientRect();
@@ -153,7 +196,8 @@ function TaskGraph({activeTaskset}){
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
+            onEdgesDelete={handleDeleteEdge}
+            onConnect={handleOnConnect}
             onPaneContextMenu={handlePaneContextMenu}
             onPaneClick={handlePaneClick}
             onNodeContextMenu={handleNodeContextMenu}
@@ -171,6 +215,7 @@ function TaskGraph({activeTaskset}){
                 //Something like onContextMenu & onTaskModal 
                 setContextMenu={setContextMenu}
                 setTaskModal={setTaskModal}
+                activeTaskset={activeTaskset}
                 ></ContextMenu>
             )}
             {taskModal && (
