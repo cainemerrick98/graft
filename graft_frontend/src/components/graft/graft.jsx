@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { fetchWithAuth } from "../../api/fecthWrappers";
 import TaskGraphWrapper from '../reactflow/taskgraph'
 import Sidebar from '../sidebar/sidebar'
@@ -31,15 +31,12 @@ function Graft(){
 
   }, []) //Empty depednecy array means this will only run on initial render perfect
   
-  const handleTasksetChange = useCallback((id) => {
-    setActiveTaskset(id)
-  }, [])
 
   return(
     <div className='graft-container'>
       <Sidebar tasksets={tasksets} 
       activeTaskset={activeTaskset}
-      onTasksetChange={handleTasksetChange}
+      setActiveTaskset={setActiveTaskset}
       setTasksets={setTasksets}
       />
       <TaskGraphWrapper activeTaskset={activeTaskset}/>

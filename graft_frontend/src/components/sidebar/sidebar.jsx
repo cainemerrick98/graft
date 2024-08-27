@@ -2,14 +2,14 @@ import { useState } from "react";
 import './sidebar.css' 
 import { fetchWithAuth } from "../../api/fecthWrappers";
 
-function Sidebar({tasksets, activeTaskset, onTasksetChange, setTasksets}){
+function Sidebar({tasksets, activeTaskset, setActiveTaskset, setTasksets}){
     const [hidden, setHidden] = useState(false)
 
     const taskset_divs = tasksets.map(ts => 
         <div className={`taskset ${ts.id === activeTaskset ? 'active' : ''}`} 
         id={ts.id} 
         key={ts.id}
-        onClick={(e) => {onTasksetChange(Number(e.target.id))}}>
+        onClick={(e) => {setActiveTaskset(Number(e.target.id))}}>
             
             <span>{ts.name}</span>
             <span onClick={() => handleDeleteTaskset(ts.id)} className="material-icons lightgrey-icon">delete</span>
@@ -33,6 +33,7 @@ function Sidebar({tasksets, activeTaskset, onTasksetChange, setTasksets}){
                 const taskset = await response.json()
                 console.log(taskset)
                 setTasksets([...tasksets, taskset])
+                setActiveTaskset(taskset.id)
             }else{
                 const data = await response.json()
                 console.log(data)
@@ -43,9 +44,21 @@ function Sidebar({tasksets, activeTaskset, onTasksetChange, setTasksets}){
         }
 
     }
+    
+    const resetActiveTaskset = (id) => {
+        if(tasksets[0].id === id){
+            setActiveTaskset(tasksets[1].id)
+        }else if(tasksets[tasksets.length - 1].id === id){
+            setActiveTaskset(tasksets[tasksets.length - 2].id)
+        }else{
+            let new_active_tasket = tasksets.find((taskset, index, self) => self[index + 1].id === id)
+            console.log(new_active_tasket)
+            setActiveTaskset(new_active_tasket.id)
+        }
+    } 
 
     const handleDeleteTaskset = async (id) => {
-
+        //TODO: On delete reset the activte taskset
         const options = {
             method:'DELETE',
         }
@@ -53,7 +66,12 @@ function Sidebar({tasksets, activeTaskset, onTasksetChange, setTasksets}){
         try{
             const response = await fetchWithAuth(`todo/taskset/${id}`, options)
             if(response.ok){
-                setTasksets(tasksets.filter(taskset => taskset.id != id))
+                if(tasksets.length > 1){
+                    resetActiveTaskset(id)
+                }else{
+                    setActiveTaskset(null)
+                }
+                setTasksets(tasksets.filter(taskset => taskset.id !== id))
             }else{
                 const data = await response.json()
                 console.log(data)
