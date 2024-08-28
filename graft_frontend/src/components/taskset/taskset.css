@@ -1,0 +1,22 @@
+
+.taskset{
+    padding:10px;
+    display: flex;
+    border-radius: 10px;
+    border: 1px solid lightgrey;
+    justify-content: space-between;
+}
+
+.taskset:hover{
+    cursor: pointer;
+    background-color: rgb(235, 234, 234);
+}
+
+.delete-taskset{
+    width: 100%;
+    text-align: right;
+}
+
+.active{
+    background-color:  rgb(235, 234, 234);
+}

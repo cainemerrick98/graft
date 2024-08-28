@@ -1,22 +1,10 @@
 import { useState } from "react";
 import './sidebar.css' 
 import { fetchWithAuth } from "../../api/fecthWrappers";
+import Taskset from "../taskset/taskset";
 
 function Sidebar({tasksets, activeTaskset, setActiveTaskset, setTasksets}){
     const [hidden, setHidden] = useState(false)
-
-    const taskset_divs = tasksets.map(ts => 
-        <div className={`taskset ${ts.id === activeTaskset ? 'active' : ''}`} 
-        id={ts.id} 
-        key={ts.id}
-        onClick={(e) => {setActiveTaskset(Number(e.target.id))}}>
-            
-            <span>{ts.name}</span>
-            <span onClick={() => handleDeleteTaskset(ts.id)} className="material-icons lightgrey-icon">delete</span>
-            
-            
-        </div> 
-    )
 
     const handleAddTaskset = async() => {
         const payload = {
@@ -44,7 +32,7 @@ function Sidebar({tasksets, activeTaskset, setActiveTaskset, setTasksets}){
         }
 
     }
-    
+
     const resetActiveTaskset = (id) => {
         if(tasksets[0].id === id){
             setActiveTaskset(tasksets[1].id)
@@ -55,10 +43,9 @@ function Sidebar({tasksets, activeTaskset, setActiveTaskset, setTasksets}){
             console.log(new_active_tasket)
             setActiveTaskset(new_active_tasket.id)
         }
-    } 
+    }
 
     const handleDeleteTaskset = async (id) => {
-        //TODO: On delete reset the activte taskset
         const options = {
             method:'DELETE',
         }
@@ -83,6 +70,12 @@ function Sidebar({tasksets, activeTaskset, setActiveTaskset, setTasksets}){
         
         
     }
+
+    const taskset_divs = tasksets.map(ts => 
+        <Taskset key={ts.id} id={ts.id} name={ts.name} activeTaskset={activeTaskset} setActiveTaskset={setActiveTaskset} handleDeleteTaskset={handleDeleteTaskset}/>
+    )
+
+    
 
     return (
         <div className="sidebar" style={{height:'100%', width:'30%'}}>
