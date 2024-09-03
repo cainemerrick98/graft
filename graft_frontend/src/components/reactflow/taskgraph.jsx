@@ -2,14 +2,20 @@ import { ReactFlow, Background, applyNodeChanges, applyEdgeChanges, addEdge, use
 import { useState, useRef, useCallback, useEffect } from "react";
 import ContextMenu from "../menu/contextmenu";
 import TaskModal from "../modal/taskmodal";
+import TaskNode from "../task/tasknode";
 import '@xyflow/react/dist/style.css';
 import './taskgraph.css'
+import '../task/tasknode.css'
 import { fetchWithAuth } from "../../api/fecthWrappers";
 import { nodeToTask, edgeToDependency, tasksToNodes, dependenciesToEdges } from "../../api/objectConverters";
 
 const contextMenus = {
     PANE:'PANE',
     NODE:'NODE',
+}
+
+const nodeTypes = {
+    'task':TaskNode
 }
 
 function TaskGraph({activeTaskset}){
@@ -175,6 +181,7 @@ function TaskGraph({activeTaskset}){
             onNodeContextMenu={handleNodeContextMenu}
             onNodeClick={handleNodeClick}
             onNodeDragStop={handleNodeDragStop}
+            nodeTypes={nodeTypes}
             >
                 <Background variant="dots"></Background>
 

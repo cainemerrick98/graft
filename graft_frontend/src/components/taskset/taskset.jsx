@@ -14,9 +14,8 @@ function Taskset({id, name, setActiveTaskset, activeTaskset, handleDeleteTaskset
 
     useEffect(() => {
         if (edit && inputRef.current) {
-            console.log(inputRef.current) // Log input ref
-            inputRef.current.focus() // Focus on the input
-            inputRef.current.select() // Highlight the text
+            inputRef.current.focus() 
+            inputRef.current.select()
           }
         }, [edit]
     )
@@ -25,7 +24,11 @@ function Taskset({id, name, setActiveTaskset, activeTaskset, handleDeleteTaskset
         setTasksetName(e.target.value)
     }
 
+    //TODO add handle empty name! 
+    //Name cannot be empty so should revert to previous or not allow to leave without updating
+    //Revert to previous is better UX
     const saveTasksetName = async() => {
+        handleSetEdit()
         const options = {
             method:'PATCH',
             body:JSON.stringify({name:tasksetName})

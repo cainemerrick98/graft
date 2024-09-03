@@ -1,3 +1,5 @@
+//TODO: is nodeToTask needed
+//TODO: check all these funcs
 function nodeToTask(node, activeTaskset){
     return {
         title:node.data.label,
@@ -13,7 +15,8 @@ function tasksToNodes(tasks){
         return {
             id:String(task.id),
             position:{x:task.x, y:task.y},
-            data:{label:task.title}
+            type:'task',
+            data:{label:task.title, completed:task.completed}
         }
     })
     return nodes
