@@ -26,9 +26,20 @@ function TaskNode({data, id}) {
   }
 
   //TODO: handle name cannot be empty
+  //TODO: handle title is same - no api call
   const handleOnBlur = () => {
     handleSetEdit()
     saveTaskTitle()
+  }
+  /**
+   * 
+   * @param {KeyboardEvent} e 
+   */
+  const handleKeyDown = (e) => {
+    console.log('key')
+    if(e.key === 'Enter'){
+      handleOnBlur()
+    }
   }
 
   const saveTaskTitle = async () => {
@@ -97,7 +108,7 @@ function TaskNode({data, id}) {
       )}
       {edit && (
           <>
-          <input value={title} ref={inputRef} onChange={handleInputChange} onBlur={handleOnBlur} className='task-name-input'/>
+          <input value={title} ref={inputRef} onChange={handleInputChange} onKeyDown={handleKeyDown} onBlur={handleOnBlur} className='task-name-input'/>
           </>
       )}
         

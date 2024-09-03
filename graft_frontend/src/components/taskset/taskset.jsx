@@ -24,6 +24,13 @@ function Taskset({id, name, setActiveTaskset, activeTaskset, handleDeleteTaskset
         setTasksetName(e.target.value)
     }
 
+    const handleKeyDown = (e) => {
+        if(e.key === 'Enter'){
+            saveTasksetName()
+        }
+
+    }
+
     //TODO add handle empty name! 
     //Name cannot be empty so should revert to previous or not allow to leave without updating
     //Revert to previous is better UX
@@ -64,7 +71,7 @@ function Taskset({id, name, setActiveTaskset, activeTaskset, handleDeleteTaskset
             )}
             {edit && (
                 <>
-                <input value={tasksetName} ref={inputRef} onChange={handleInputChange} onBlur={saveTasksetName}/>
+                <input value={tasksetName} ref={inputRef} onChange={handleInputChange} onBlur={saveTasksetName} onKeyDown={handleKeyDown}/>
                 <span onClick={() => handleDeleteTaskset(id)} className="material-icons lightgrey-icon">delete</span>
                 </>
             )}
