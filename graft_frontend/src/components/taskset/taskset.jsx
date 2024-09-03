@@ -76,6 +76,7 @@ function Taskset({id, name, setActiveTaskset, activeTaskset, handleDeleteTaskset
                 </>
             )}
         </div> 
+        //TODO: add completion
     )
 }
 
